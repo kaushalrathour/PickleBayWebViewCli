@@ -1,0 +1,1 @@
+export const picklebayUrl = "https://picklebay.com"

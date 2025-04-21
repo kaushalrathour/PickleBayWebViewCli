@@ -1,0 +1,88 @@
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  BackHandler,
+  Text,
+  View
+} from "react-native";
+import { WebView, WebViewNavigation } from "react-native-webview";
+import { picklebayUrl } from "../constants/data";
+import analytics from "@react-native-firebase/analytics";
+import ErrorWithAction from "../components/ErrorWithAction/ErrorWithAction";
+
+const WebViewScreen = () => {
+  const [uri, setUri] = useState(picklebayUrl)
+  const webviewRef = useRef(null);
+  const [canGoBack, setCanGoBack] = useState(false);
+  const [canGoForward, setCanGoForward] = useState<boolean>(false);
+  const [networkError, setNetworkError] = useState<boolean>(false);
+
+  const backButtonHandler = () => {
+    if (canGoBack && webviewRef.current) {
+      webviewRef.current.goBack();
+      return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backButtonHandler);
+    return () => backHandler.remove();
+  }, [canGoBack]);
+
+  const handleNavigationChange = async (navState: WebViewNavigation) => {
+    setCanGoBack(navState.canGoBack);
+    setCanGoForward(navState.canGoForward);
+    try {
+      await analytics().logEvent("webview_navigation", {
+        url: navState.url,
+      });
+      console.log("Logged Event");
+    } catch (err) {
+      console.warn("Failed to log analytics event:", err);
+    }
+  };
+
+  const handleLoading = ()=> {
+    return(
+      <View style={{flex: 1, alignItems: "center"}}>
+          <Text>Loading...</Text>
+          <ActivityIndicator size={"large"} color={"#1c4ba3"} />
+      </View>
+    )
+  }
+
+  const handleRetry = ()=> {
+    setUri(picklebayUrl);
+    setNetworkError(false);
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      {networkError && 
+      <ErrorWithAction 
+        title={"Network Error"} 
+        description={"Please make sure that you're connected to the internet. Click on retry or pull to refresh"} 
+        action={handleRetry} 
+        actionTitle={"Retry"}
+      /> ||
+      <WebView
+        style={{flex: 1}}
+        ref={webviewRef}
+        source={{ uri }}
+        onNavigationStateChange={handleNavigationChange}
+        startInLoadingState={true}
+        onLoad={handleLoading}
+        onError={({nativeEvent})=>{
+          if(nativeEvent.description==="net::ERR_INTERNET_DISCONNECTED") {
+            setNetworkError(true);
+          }
+        }}
+        pullToRefreshEnabled={true}
+        removeClippedSubviews
+        renderLoading={handleLoading}/>}
+    </View>
+  );
+};
+
+export default WebViewScreen;
