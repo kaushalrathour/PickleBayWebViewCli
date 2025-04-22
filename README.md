@@ -1,97 +1,117 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# PickleBay WebView Client
 
-# Getting Started
+<p align="center">
+  <img src="assets/logo.png" alt="PickleBay Logo" width="200"/>
+</p>
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+A React Native mobile application that provides a WebView wrapper for the PickleBay website with enhanced native features and analytics integration.
 
-## Step 1: Start Metro
+## ✨ Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### 📱 Core Functionality
+- **Responsive WebView**
+  - Seamlessly displays the PickleBay website within a native mobile application
+  - Adaptive layout for different screen sizes
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+### 🔄 Navigation
+- **Smart History Management**
+  - Intuitive back and forward navigation
+  - Native Android back button support
+  - Gesture-based navigation
 
-```sh
-# Using npm
-npm start
+### 💾 Data Persistence
+- **Session Management**
+  - Auto-save of last visited URL
+  - Seamless session restoration
+  - Persistent browsing history
 
-# OR using Yarn
-yarn start
+### ⚡ Performance
+- **Error Handling**
+  - Real-time network monitoring
+  - Offline mode support
+  - Smart retry mechanisms
+
+### 🔄 User Experience
+- **Interactive Features**
+  - Smooth pull-to-refresh functionality
+  - Visual loading indicators
+  - Progress tracking for page loads
+
+### 📊 Analytics
+- **Usage Tracking**
+  - Firebase Analytics integration
+  - Navigation event logging
+  - User behavior insights
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [ ] Node.js (v14 or higher) and npm/yarn
+- [ ] React Native development environment
+- [ ] Android Studio (for Android development)
+- [ ] Firebase project with:
+  - Analytics enabled
+  - Valid `google-services.json`
+  - API keys configured
+
+### Technical Stack
+
+| Technology | Purpose |
+|------------|---------|
+| React Native | Core framework |
+| React Native WebView | Web content display |
+| Firebase Analytics | Usage tracking |
+| AsyncStorage | Local data persistence |
+| TypeScript | Type safety |
+
+### 📁 Project Structure
+
+```plaintext
+src/
+├── components/
+│   └── WebViewScreen.tsx   # Main WebView component
+├── config/
+│   └── .env               # Environment variables
+└── android/
+    └── app/
+        └── google-services.json  # Firebase config
 ```
 
-## Step 2: Build and run your app
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
+## 🛠️ Setup Guide
+1. Clone & Install
+```bash
+git clone https://github.com/kaushalrathour/PickleBayWebViewCli.git
+cd PickleBayWebViewCli
+npm install
+touch .env
 ```
+2. Firebase Setup
+   - Create a new Firebase project
+   - Copy google-services.json to android/app/
+   - Configure .env with Firebase credentials
 
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+3. Launch Application
+```bash
+npx react-native run-android
 ```
+## 🔍 How It Works
+### Initial Load
+- Launches with default PickleBay URL
+- Restores previous session state
+- Initializes analytics tracking
 
-Then, and every time you update your native dependencies, run:
+### Navigation System
+- Manages navigation state
+- Handles hardware buttons
+- Maintains navigation history
 
-```sh
-bundle exec pod install
-```
+### Error Management
+- Monitors network status
+- Implements retry logic
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+### Analytics Integration
+- Tracks page views
+- Logs navigation events
+- Monitors user interactions

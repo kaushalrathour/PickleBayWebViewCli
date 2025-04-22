@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   BackHandler,
+  RefreshControl,
+  ScrollView,
   Text,
   View
 } from "react-native";
@@ -9,17 +11,20 @@ import { WebView, WebViewNavigation } from "react-native-webview";
 import { picklebayUrl } from "../constants/data";
 import analytics from "@react-native-firebase/analytics";
 import ErrorWithAction from "../components/ErrorWithAction/ErrorWithAction";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const WebViewScreen = () => {
-  const [uri, setUri] = useState(picklebayUrl)
+  const [uri, setUri] = useState(picklebayUrl);
+  const [currentUri, setCurrentUri] = useState<string>("");
   const webviewRef = useRef(null);
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState<boolean>(false);
   const [networkError, setNetworkError] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
 
   const backButtonHandler = () => {
     if (canGoBack && webviewRef.current) {
-      webviewRef.current.goBack();
+      (webviewRef.current as WebView).goBack();
       return true;
     }
     return false;
@@ -33,9 +38,11 @@ const WebViewScreen = () => {
   const handleNavigationChange = async (navState: WebViewNavigation) => {
     setCanGoBack(navState.canGoBack);
     setCanGoForward(navState.canGoForward);
+    const { url } = navState;
+    setCurrentUri(url);
     try {
       await analytics().logEvent("webview_navigation", {
-        url: navState.url,
+        url,
       });
       console.log("Logged Event");
     } catch (err) {
@@ -57,8 +64,38 @@ const WebViewScreen = () => {
     setNetworkError(false);
   }
 
+  const onRefresh = () => {
+    if(currentUri === "") return;
+    setRefreshing(true);
+    setUri(currentUri);
+    setRefreshing(false);
+  }
+  useEffect(()=>{
+    const saveCurrentUri = async ()=> {
+      if(currentUri === "") return;
+      await AsyncStorage.setItem("currentUri", currentUri);
+    }
+    saveCurrentUri();
+  },[currentUri]);
+
+  useEffect(() => {
+    const getLastVisitedUrl = async () => {
+      try {
+        const lastUrl = await AsyncStorage.getItem("currentUri");
+        if (lastUrl) {
+          setCurrentUri(lastUrl);
+          setUri(lastUrl);
+        }
+      } catch (error) {
+        console.warn("Failed to get last visited URL:", error);
+      }
+    };
+    getLastVisitedUrl();
+  }, []);
+  
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView contentContainerStyle={{flex: 1}} refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
       {networkError && 
       <ErrorWithAction 
         title={"Network Error"} 
@@ -73,7 +110,7 @@ const WebViewScreen = () => {
         onNavigationStateChange={handleNavigationChange}
         startInLoadingState={true}
         onLoad={handleLoading}
-        onError={({nativeEvent})=>{
+        onError={({nativeEvent}: any)=>{
           if(nativeEvent.description==="net::ERR_INTERNET_DISCONNECTED") {
             setNetworkError(true);
           }
@@ -81,7 +118,7 @@ const WebViewScreen = () => {
         pullToRefreshEnabled={true}
         removeClippedSubviews
         renderLoading={handleLoading}/>}
-    </View>
+    </ScrollView>
   );
 };
 

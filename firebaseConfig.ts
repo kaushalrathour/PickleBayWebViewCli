@@ -1,12 +1,16 @@
 import { getAnalytics } from "@react-native-firebase/analytics";
 import { initializeApp } from "@react-native-firebase/app";
-
+import {
+  FIREBASE_API_KEY,
+  FIREBASE_PROJECT_ID,
+  FIREBASE_APP_ID
+} from '@env';
 
 const credentials = {
-    apiKey: "AIzaSyDqwFWQRCfms_aQBhUYvZZgqVLeW9HsjxA",
-    projectId: "picklebay-968f9",
-    appId: "1:793175627487:android:b4babcac4cad192b63bb6a"
- };
+    apiKey: FIREBASE_API_KEY,
+    projectId: FIREBASE_PROJECT_ID,
+    appId: FIREBASE_APP_ID
+};
 
 const app = initializeApp(credentials);
 
